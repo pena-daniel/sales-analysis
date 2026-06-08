@@ -8,6 +8,9 @@ jobs:
   run-dbt:
     runs-on: ubuntu-latest
 
+    env:
+      DBT_PROFILES_DIR: ./
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -17,12 +20,30 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install dbt
+      - name: Install dependencies
         run: |
           pip install dbt-postgres
 
-      - name: Run dbt debug
-        run: dbt debug
+      - name: Create profiles.yml
+        run: |
+          mkdir -p ~/.dbt
+          cat > profiles.yml << EOF
+          my_project:
+            target: dev
+            outputs:
+              dev:
+                type: postgres
+                host: ${{ secrets.DB_HOST }}
+                user: ${{ secrets.DB_USER }}
+                password: ${{ secrets.DB_PASSWORD }}
+                port: 5432
+                dbname: ${{ secrets.DB_NAME }}
+                schema: analytics
+                threads: 4
+          EOF
 
-      - name: Run dbt build
-        run: dbt build
+      - name: dbt debug
+        run: dbt debug --profiles-dir .
+
+      - name: dbt build
+        run: dbt build --profiles-dir .
