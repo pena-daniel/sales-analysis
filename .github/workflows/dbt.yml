@@ -28,7 +28,7 @@ jobs:
         run: |
           mkdir -p ~/.dbt
           cat > profiles.yml << EOF
-          my_project:
+          etl:
             target: dev
             outputs:
               dev:
