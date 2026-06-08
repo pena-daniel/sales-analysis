@@ -1,0 +1,14 @@
+# dbt core + postgres adapter
+dbt-core==1.8.2
+dbt-postgres==1.8.2
+
+# data generation (for your seeds)
+Faker==25.9.1
+numpy==2.0.1
+pandas==2.2.2
+
+# optional but useful for data checks / observability
+#great-expectations==0.18.15
+
+# optional (if you later integrate Elementary)
+#elementary-data==0.16.0
