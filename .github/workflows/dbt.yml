@@ -13,13 +13,13 @@ jobs:
       postgres:
         image: postgres:15
         env:
-          POSTGRES_USER: "${{ secrets.DB_USER }}"
-          POSTGRES_PASSWORD: "${{ secrets.DB_PASSWORD }}"
-          POSTGRES_DB: "${{ secrets.DB_NAME }}"
+          POSTGRES_USER: dbt_user
+          POSTGRES_PASSWORD: dbt_pass
+          POSTGRES_DB: sales_db
         ports:
           - 5432:5432
         options: >-
-          --health-cmd="pg_isready -U ${{ secrets.DB_USER }}"
+          --health-cmd="pg_isready -U dbt_user"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
