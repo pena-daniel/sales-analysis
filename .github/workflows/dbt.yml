@@ -22,7 +22,7 @@ jobs:
           pip install dbt-postgres
 
       - name: Run dbt debug
-        run: dbt debug --profiles-dir .
+        run: dbt debug
 
       - name: Run dbt build
-        run: dbt build --profiles-dir .
+        run: dbt build
