@@ -1,0 +1,102 @@
+# version: 2
+
+# models:
+#   - name: br_products
+#     columns:
+#       - name: id
+#         tests:
+#           - not_null
+#           - unique
+
+#       - name: name
+#         tests:
+#           - not_null
+#           - unique
+
+#       - name: category
+#         tests:
+#           - not_null
+
+#       - name: price
+#         tests:
+#           - not_null
+#           - dbt_utils.expression_is_true:
+#               expression: "unit_price > 0"
+
+#   - name: br_customers
+#     columns:
+#       - name: id
+#         tests:
+#           - not_null
+#           - unique
+
+#       - name: name
+#         tests:
+#           - not_null
+
+#       - name: email
+#         tests:
+#           - not_null
+#           - unique
+
+#       - name: country
+#         tests:
+#           - not_null
+
+#   - name: br_orders
+#     columns:
+#       - name: id
+#         tests:
+#           - not_null
+#           - unique
+
+#       - name: date
+#         tests:
+#           - not_null
+
+#       - name: customer_id
+#         tests:
+#           - relationships:
+#               to: ref('br_customers')
+#               field: id
+
+#       - name: status
+#         tests:
+#           - not_null
+#           - accepted_values:
+#               values:
+#                 - completed
+#                 - pending
+#                 - cancelled
+#                 - processing
+
+#   - name: br_order_items
+#     columns:
+#       - name: id
+#         tests:
+#           - not_null
+#           - unique
+
+#       - name: order_id
+#         tests:
+#           - relationships:
+#               to: ref('br_orders')
+#               field: id
+
+#       - name: product_id
+#         tests:
+#           - relationships:
+#               to: ref('br_products')
+#               field: id
+
+#       - name: quantity
+#         tests:
+#           - not_null
+#           - dbt_utils.expression_is_true:
+#               expression: "quantity > 0"
+
+#       - name: unit_price
+#         tests:
+#           - not_null
+#           - dbt_utils.expression_is_true:
+#               expression: "unit_price > 0"
