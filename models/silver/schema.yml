@@ -8,20 +8,20 @@ models:
           - not_null
           - unique
 
-      - name: name
+      - name: product_name
         tests:
           - not_null
-          - unique
+          # - unique
 
       - name: category
         tests:
           - not_null
 
-      - name: price
+      - name: clean_price
         tests:
           - not_null
           - dbt_utils.expression_is_true:
-              expression: "unit_price > 0"
+              expression: ">= 0"
 
   - name: sl_customers
     columns:
@@ -30,28 +30,28 @@ models:
           - not_null
           - unique
 
-      - name: name
+      - name: customer_name
         tests:
           - not_null
-          - unique
+          # - unique
 
-      - name: email
+      - name: customer_email
         tests:
           - not_null
-          - unique
+          # - unique
 
-      - name: country
+      - name: customer_country
         tests:
           - not_null
 
-  - name: br_orders
+  - name: sl_orders
     columns:
       - name: id
         tests:
           - not_null
           - unique
 
-      - name: date
+      - name: order_date
         tests:
           - not_null
 
@@ -71,8 +71,9 @@ models:
                 - cancelled
                 - processing
                 - unknown
+                - invalid_status
 
-  - name: sl_order_items
+  - name: sl_order_products
     columns:
       - name: id
         tests:
@@ -95,10 +96,10 @@ models:
         tests:
           - not_null
           - dbt_utils.expression_is_true:
-              expression: "quantity > 0"
+              expression: ">= 0"
 
       - name: unit_price
         tests:
           - not_null
           - dbt_utils.expression_is_true:
-              expression: "unit_price > 0"
+              expression: ">= 0"

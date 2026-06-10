@@ -4,9 +4,12 @@ WITH order_products AS (
         id,
         order_id,
         product_id,
-        quantity,
-        unit_price,
-        unit_price * quantity AS total
+        CASE WHEN quantity < 0 
+            THEN 0 ELSE quantity 
+        END AS quantity,
+        CASE WHEN unit_price is null OR unit_price < 0 
+            THEN 0 ELSE unit_price 
+        END AS unit_price
 
     FROM {{ ref('br_order_items') }}
 

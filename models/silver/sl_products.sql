@@ -16,7 +16,7 @@ WITH cleaned AS (
 
         CASE
             WHEN price < 0
-            THEN NULL
+            THEN 0
             ELSE price
         END AS clean_price,
 
