@@ -5,32 +5,31 @@ on:
     branches:
       - main
 
-x-postgres-service: &postgres_service
-  image: postgres:15
-  env:
-    POSTGRES_USER: dbt_user
-    POSTGRES_PASSWORD: dbt_pass
-    POSTGRES_DB: sales_db
-  ports:
-    - 5432:5432
-  options: >-
-    --health-cmd="pg_isready -U dbt_user"
-    --health-interval=10s
-    --health-timeout=5s
-    --health-retries=5
-
 jobs:
-
-  setup:
+  run-dbt:
     runs-on: ubuntu-latest
 
     services:
-      postgres: *postgres_service
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: dbt_user
+          POSTGRES_PASSWORD: dbt_pass
+          POSTGRES_DB: sales_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U dbt_user"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
@@ -55,108 +54,17 @@ jobs:
                 threads: 4
           EOF
 
-      - name: Upload profile
-        uses: actions/upload-artifact@v4
-        with:
-          name: dbt-config
-          path: profiles.yml
-
-  debug:
-    needs: setup
-    runs-on: ubuntu-latest
-
-    services:
-      postgres: *postgres_service
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: dbt-config
-
-      - name: Install dbt
-        run: pip install dbt-core==1.8.2 dbt-postgres==1.8.2
-
       - name: dbt debug
         run: dbt debug --profiles-dir .
-
-  deps:
-    needs: debug
-    runs-on: ubuntu-latest
-
-    services:
-      postgres: *postgres_service
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: dbt-config
-
-      - name: Install dbt
-        run: pip install dbt-core==1.8.2 dbt-postgres==1.8.2
 
       - name: dbt deps
         run: dbt deps --profiles-dir .
 
-  seed:
-    needs: deps
-    runs-on: ubuntu-latest
-
-    services:
-      postgres: *postgres_service
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: dbt-config
-
-      - name: Install dbt
-        run: pip install dbt-core==1.8.2 dbt-postgres==1.8.2
-
       - name: dbt seed
         run: dbt seed --profiles-dir .
 
-  build:
-    needs: seed
-    runs-on: ubuntu-latest
-
-    services:
-      postgres: *postgres_service
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: dbt-config
-
-      - name: Install dbt
-        run: pip install dbt-core==1.8.2 dbt-postgres==1.8.2
-
-      - name: dbt build
-        run: dbt build --profiles-dir .
-
-  tests:
-    needs: build
-    runs-on: ubuntu-latest
-
-    services:
-      postgres: *postgres_service
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: dbt-config
-
-      - name: Install dbt
-        run: pip install dbt-core==1.8.2 dbt-postgres==1.8.2
+      - name: dbt run
+        run: dbt run --profiles-dir .
 
       - name: dbt test
         run: dbt test --profiles-dir .
