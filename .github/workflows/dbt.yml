@@ -2,12 +2,12 @@ name: dbt CI
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
 
 jobs:
   run-dbt:
     runs-on: ubuntu-latest
+
 
     services:
       postgres:
@@ -24,6 +24,9 @@ jobs:
           --health-timeout=5s
           --health-retries=5
 
+    env:
+      DBT_PROFILES_DIR: ./
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -33,19 +36,27 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install dbt
+      - name: Install dbt Core + Postgres adapter
         run: |
           pip install dbt-core==1.8.2 dbt-postgres==1.8.2
 
+      - name: Wait for Postgres
+        run: |
+          until pg_isready -h localhost -p 5432 -U dbt_user; do
+            echo "waiting for postgres..."
+            sleep 2
+          done
+
       - name: Create profiles.yml
         run: |
+          mkdir -p ~/.dbt
           cat > profiles.yml << EOF
           etl:
             target: dev
             outputs:
               dev:
                 type: postgres
-                host: postgres
+                host: ${{ secrets.DB_HOST }}
                 user: dbt_user
                 password: dbt_pass
                 port: 5432
@@ -54,24 +65,17 @@ jobs:
                 threads: 4
           EOF
 
-      - name: Wait for Postgres
-        run: |
-          until pg_isready -h postgres -U dbt_user; do
-            echo "waiting..."
-            sleep 2
-          done
-
-      - name: dbt debug
-        run: dbt debug --profiles-dir .
-
       - name: dbt deps
         run: dbt deps --profiles-dir .
 
       - name: dbt seed
         run: dbt seed --profiles-dir .
 
-      - name: dbt run
-        run: dbt run --profiles-dir .
+      - name: dbt debug
+        run: dbt debug --profiles-dir .
+
+      - name: dbt build
+        run: dbt build --profiles-dir .
 
       - name: dbt test
         run: dbt test --profiles-dir .
