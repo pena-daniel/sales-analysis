@@ -22,7 +22,7 @@ logs/
 generated_data/
 # dbt artifacts
 *.json
-*.csv
+# *.csv
 profiles.yml
 
 # but KEEP seeds folder structure (optional rule below)
