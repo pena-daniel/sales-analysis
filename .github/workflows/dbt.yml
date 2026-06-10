@@ -54,6 +54,13 @@ jobs:
                 threads: 4
           EOF
 
+      - name: Wait for Postgres
+        run: |
+          until pg_isready -h postgres -U dbt_user; do
+            echo "waiting..."
+            sleep 2
+          done
+
       - name: dbt debug
         run: dbt debug --profiles-dir .
 
