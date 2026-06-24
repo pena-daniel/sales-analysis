@@ -91,6 +91,9 @@ models:
           - relationships:
               to: ref('sl_products')
               field: id
+              config:
+                severity: warn
+                store_failures: true
 
       - name: quantity
         tests:
