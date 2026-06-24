@@ -1,0 +1,68 @@
+models:
+  - name: fct_sales
+    description: "Fait vente agrégé par commande"
+    columns:
+      - name: order_id
+        tests:
+          - not_null
+          - unique # 1 ligne par commande
+
+      - name: customer_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('sl_orders')
+              field: customer_id
+              config:
+                severity: warn
+                store_failures: true
+
+      - name: total_price
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0" # pas de prix négatif
+
+      - name: total_products
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 1" # min 1 produit par commande
+
+      - name: total_quantity
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 1"
+
+      - name: average_basket_price
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+
+      - name: order_status
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['completed', 'pending', 'cancelled', 'processing', 'unknown', 'invalid_status']
+              config:
+                severity: warn # warn si nouveau statut inconnu
+                store_failures: true
+
+      - name: order_date
+        tests:
+          - not_null
+
+      - name: order_rank
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 1"
+
+      - name: top_category
+        tests:
+          - not_null:
+              config:
+                severity: warn # warn car calcul mode() peut être null
+                store_failures: true
