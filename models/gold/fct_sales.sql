@@ -45,6 +45,7 @@ final as (
 
     from {{ ref('sl_orders') }} o
     left join order_agg agg on o.id = agg.order_id
+    where o.data_quality_status = 'valid' and order_id != null
 )
 
 

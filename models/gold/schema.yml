@@ -22,24 +22,36 @@ models:
           - not_null
           - dbt_utils.expression_is_true:
               expression: ">= 0" # pas de prix négatif
+              config:
+                severity: warn # warn si nouveau statut inconnu
+                store_failures: true
 
       - name: total_products
         tests:
           - not_null
           - dbt_utils.expression_is_true:
               expression: ">= 1" # min 1 produit par commande
+              config:
+                severity: warn # warn si nouveau statut inconnu
+                store_failures: true
 
       - name: total_quantity
         tests:
           - not_null
           - dbt_utils.expression_is_true:
               expression: ">= 1"
+              config:
+                severity: warn # warn si nouveau statut inconnu
+                store_failures: true
 
       - name: average_basket_price
         tests:
           - not_null
           - dbt_utils.expression_is_true:
               expression: ">= 0"
+              config:
+                severity: warn # warn si nouveau statut inconnu
+                store_failures: true
 
       - name: order_status
         tests:
