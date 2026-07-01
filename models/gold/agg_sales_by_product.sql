@@ -15,7 +15,7 @@ with product_agg as (
         sum(op.quantity * op.unit_price) as total_revenue
 
     from {{ ref('sl_order_products') }} as op
-    where data_quality_status = "valid"
+    where op.data_quality_status = 'valid'
     GROUP BY product_id
 ),
 
