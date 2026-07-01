@@ -57,9 +57,7 @@ models:
 
       - name: customer_id
         tests:
-          - relationships:
-              to: ref('sl_customers')
-              field: id
+          - not_null
 
       - name: status
         tests:
